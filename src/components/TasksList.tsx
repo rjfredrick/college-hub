@@ -1,18 +1,24 @@
 import React, { useState } from "react"
 import {
   Paper,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  IconButton,
   Typography,
   Checkbox,
   TextField,
   Button,
   Box,
+  IconButton,
 } from "@mui/material"
+import {
+  Timeline,
+  TimelineItem,
+  TimelineSeparator,
+  TimelineConnector,
+  TimelineContent,
+  TimelineDot,
+  TimelineOppositeContent,
+} from "@mui/lab"
 import DeleteIcon from "@mui/icons-material/Delete"
+import AssignmentIcon from "@mui/icons-material/Assignment"
 import {
   collection,
   addDoc,
@@ -77,53 +83,99 @@ export const TasksList: React.FC<TasksListProps> = ({
 
   return (
     <Paper elevation={2} sx={{ p: 2, mb: 2 }}>
-      <Typography variant="h6" gutterBottom>
-        {collegeName ? `Tasks for ${collegeName}` : "Tasks"}
+      <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
+        {collegeName ? `Timeline for ${collegeName}` : "Timeline"}
       </Typography>
-      <Box sx={{ mb: 2, display: "flex", gap: 1 }}>
-        <TextField
-          fullWidth
-          size="small"
-          value={newTask}
-          onChange={(e) => setNewTask(e.target.value)}
-          placeholder="Add a new task"
-          onKeyPress={(e) => e.key === "Enter" && handleAddTask()}
-        />
-        <Button variant="contained" onClick={handleAddTask}>
-          Add
-        </Button>
-      </Box>
-      <List>
+      <Timeline position="right" sx={{ px: 0 }}>
         {tasks.map((task) => (
-          <ListItem key={task.id} dense>
-            <Checkbox
-              edge="start"
-              checked={task.completed}
-              onChange={() => handleToggleTask(task.id, task.completed)}
-            />
-            <ListItemText
-              primary={task.title}
-              secondary={`Due: ${format(
-                task.dueDate instanceof Timestamp
-                  ? task.dueDate.toDate()
-                  : task.dueDate,
-                "MMM d, yyyy"
-              )}`}
-              sx={{
-                textDecoration: task.completed ? "line-through" : "none",
-                "& .MuiListItemText-secondary": {
-                  color: task.completed ? "text.disabled" : "text.secondary",
-                },
-              }}
-            />
-            <ListItemSecondaryAction>
-              <IconButton edge="end" onClick={() => handleDeleteTask(task.id)}>
-                <DeleteIcon />
-              </IconButton>
-            </ListItemSecondaryAction>
-          </ListItem>
+          <TimelineItem key={task.id}>
+            <TimelineOppositeContent sx={{ flex: 0.2 }}>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ fontWeight: 500 }}
+              >
+                {format(
+                  task.dueDate instanceof Timestamp
+                    ? task.dueDate.toDate()
+                    : task.dueDate,
+                  "MMM d, yyyy"
+                )}
+              </Typography>
+            </TimelineOppositeContent>
+            <TimelineSeparator>
+              <TimelineDot
+                color={task.completed ? "success" : "primary"}
+                variant={task.completed ? "filled" : "outlined"}
+                sx={{ p: 1 }}
+              >
+                <AssignmentIcon fontSize="small" />
+              </TimelineDot>
+              <TimelineConnector
+                sx={{
+                  bgcolor: task.completed ? "success.light" : "primary.light",
+                }}
+              />
+            </TimelineSeparator>
+            <TimelineContent sx={{ py: 1, px: 2 }}>
+              <Paper
+                elevation={1}
+                sx={{
+                  p: 2,
+                  bgcolor: "background.paper",
+                  borderRadius: 1,
+                  border: 1,
+                  borderColor: "divider",
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1 }}>
+                  <Checkbox
+                    checked={task.completed}
+                    onChange={() => handleToggleTask(task.id, task.completed)}
+                    size="small"
+                  />
+                  <Box sx={{ flex: 1 }}>
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        fontWeight: 500,
+                        textDecoration: task.completed
+                          ? "line-through"
+                          : "none",
+                        color: task.completed
+                          ? "text.disabled"
+                          : "text.primary",
+                      }}
+                    >
+                      {task.title}
+                    </Typography>
+                    {task.description && (
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{
+                          mt: 0.5,
+                          textDecoration: task.completed
+                            ? "line-through"
+                            : "none",
+                        }}
+                      >
+                        {task.description}
+                      </Typography>
+                    )}
+                  </Box>
+                  <IconButton
+                    size="small"
+                    onClick={() => handleDeleteTask(task.id)}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+              </Paper>
+            </TimelineContent>
+          </TimelineItem>
         ))}
-      </List>
+      </Timeline>
     </Paper>
   )
 }

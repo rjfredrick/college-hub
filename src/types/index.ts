@@ -38,11 +38,12 @@ export interface College {
 export interface Application {
   id: string
   collegeName: string
-  deadline: string
-  status: 'draft' | 'pending' | 'submitted' | 'accepted' | 'rejected'
+  deadline: Date
+  status: 'not-started' | 'in-progress' | 'submitted' | 'accepted' | 'rejected' | 'waitlisted'
   userId: string
   notes?: string
   createdAt: Date
+  updatedAt: Date
 }
 
 export interface Task {
@@ -72,4 +73,11 @@ export interface UserProfile {
     pushNotifications: boolean
     reminderDays: number
   }
+}
+
+export interface NewApplication {
+  collegeName: string
+  deadline: Date
+  status: Application['status']
+  notes?: string
 }

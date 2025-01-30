@@ -33,25 +33,42 @@ export const useApplications = () => {
   }, [currentUser])
 
   const addApplication = async (
+    userId: string,
     collegeName: string,
     type: ApplicationType
   ) => {
     if (!currentUser) throw new Error("No user logged in")
 
-    const newApplication = {
-      collegeName,
-      type,
-      userId: currentUser.uid,
-      status: "pending",
-      createdAt: new Date(),
-    }
+    try {
+      console.log("Creating application:", { userId, collegeName, type })
 
-    const docRef = await addDoc(collection(db, "applications"), newApplication)
-    await fetchApplications() // Refresh the applications list
+      const newApplication = {
+        collegeName,
+        type,
+        userId,
+        status: "not-started" as const,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deadline: new Date()
+      }
 
-    return {
-      id: docRef.id,
-      ...newApplication
+      const applicationData = {
+        ...newApplication,
+        status: "not-started" as Application["status"]
+      }
+
+      const docRef = await addDoc(collection(db, "applications"), applicationData)
+      console.log("Document added with ID:", docRef.id)
+
+      await fetchApplications()
+
+      return {
+        id: docRef.id,
+        ...applicationData
+      }
+    } catch (error) {
+      console.error("Error in addApplication:", error)
+      throw error
     }
   }
 

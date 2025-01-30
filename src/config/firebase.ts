@@ -3,12 +3,12 @@ import { getAuth } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 
 const firebaseConfig = {
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.REACT_APP_FIREBASE_APP_ID
+  apiKey: "AIzaSyATK3oKn7iSAiWSJRa-ydm3B7Wn2OoDwAE",
+  authDomain: "college-hub-a411b.firebaseapp.com",
+  projectId: "college-hub-a411b",
+  storageBucket: "college-hub-a411b.firebasestorage.app",
+  messagingSenderId: "874126333294",
+  appId: "1:874126333294:web:ae647e85d29a1d2e1e1d7f"
 }
 
 // Initialize Firebase

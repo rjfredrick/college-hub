@@ -23,7 +23,6 @@ import { useApplications } from "../../hooks/useApplications"
 import type { ApplicationType, Application } from "../../types"
 import CollegeSearch from "../../components/CollegeSearch"
 import type { College } from "../../types"
-import { Timeline } from "../../components/Timeline"
 import { Stats } from "../../components/Stats"
 import { TasksList } from "../../components/TasksList"
 import { ApplicationsList } from "../../components/ApplicationsList"
@@ -63,6 +62,8 @@ const Dashboard: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([])
   const { currentUser } = useAuth()
   const [showProfileDialog, setShowProfileDialog] = useState(false)
+  const [selectedApplication, setSelectedApplication] =
+    useState<Application | null>(null)
 
   const fetchTasks = useCallback(async () => {
     if (!currentUser) return
@@ -78,32 +79,55 @@ const Dashboard: React.FC = () => {
     fetchTasks()
   }, [currentUser, fetchTasks])
 
+  useEffect(() => {
+    if (applications.length > 0 && !selectedApplication) {
+      setSelectedApplication(applications[0])
+    }
+  }, [applications, selectedApplication])
+
   const handleAddApplication = async () => {
-    if (!selectedCollege || !currentUser) return
+    console.log("handleAddApplication called")
+    if (!selectedCollege || !currentUser) {
+      console.log("Missing college or user:", { selectedCollege, currentUser })
+      return
+    }
 
-    // Add the application
-    const newApplication = await addApplication(
-      selectedCollege.name,
-      applicationType
-    )
+    try {
+      console.log("Adding application with:", {
+        uid: currentUser.uid,
+        collegeName: selectedCollege.name,
+        type: applicationType,
+      })
 
-    // Generate and add default tasks
-    const defaultTasks = generateDefaultTasks(
-      newApplication.id,
-      selectedCollege.name,
-      currentUser.uid
-    )
+      // Add the application
+      const newApplication = await addApplication(
+        currentUser.uid,
+        selectedCollege.name,
+        applicationType
+      )
 
-    // Add all tasks to Firestore
-    const tasksRef = collection(db, "tasks")
-    await Promise.all(defaultTasks.map((task) => addDoc(tasksRef, task)))
+      console.log("New application created:", newApplication)
 
-    // Refresh tasks list
-    await fetchTasks()
+      // Generate and add default tasks
+      const defaultTasks = generateDefaultTasks(
+        newApplication.id,
+        selectedCollege.name,
+        currentUser.uid
+      )
 
-    setOpenDialog(false)
-    setSelectedCollege(null)
-    setApplicationType("regular_decision")
+      // Add all tasks to Firestore
+      const tasksRef = collection(db, "tasks")
+      await Promise.all(defaultTasks.map((task) => addDoc(tasksRef, task)))
+
+      // Refresh tasks list
+      await fetchTasks()
+
+      setOpenDialog(false)
+      setSelectedCollege(null)
+      setApplicationType("regular_decision")
+    } catch (error) {
+      console.error("Error adding application:", error)
+    }
   }
 
   const handleEditApplication = (application: Application) => {
@@ -244,13 +268,12 @@ const Dashboard: React.FC = () => {
                     <Stats applications={applications} />
                   </Grid>
                   <Grid item xs={12}>
-                    <Timeline applications={applications} />
-                  </Grid>
-                  <Grid item xs={12}>
                     <ApplicationsList
                       applications={applications}
                       onEdit={handleEditApplication}
                       onDelete={handleDeleteApplication}
+                      selectedId={selectedApplication?.id}
+                      onSelect={setSelectedApplication}
                     />
                   </Grid>
                 </Grid>
@@ -291,7 +314,14 @@ const Dashboard: React.FC = () => {
               </DialogContent>
               <DialogActions>
                 <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
-                <Button onClick={handleAddApplication} variant="contained">
+                <Button
+                  onClick={(e) => {
+                    e.preventDefault()
+                    handleAddApplication()
+                  }}
+                  variant="contained"
+                  type="button"
+                >
                   Add
                 </Button>
               </DialogActions>

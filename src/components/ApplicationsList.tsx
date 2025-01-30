@@ -6,23 +6,27 @@ import {
   ListItemText,
   IconButton,
   Typography,
-  Chip,
   Box,
+  ListItemButton,
 } from "@mui/material"
 import EditIcon from "@mui/icons-material/Edit"
 import DeleteIcon from "@mui/icons-material/Delete"
-import { Application } from "../types"
+import type { Application } from "../types"
 
 interface ApplicationsListProps {
   applications: Application[]
   onEdit: (application: Application) => void
   onDelete: (applicationId: string) => void
+  selectedId?: string
+  onSelect: (application: Application) => void
 }
 
 export const ApplicationsList: React.FC<ApplicationsListProps> = ({
   applications,
   onEdit,
   onDelete,
+  selectedId,
+  onSelect,
 }) => {
   return (
     <Paper elevation={2} sx={{ p: 2 }}>
@@ -30,34 +34,43 @@ export const ApplicationsList: React.FC<ApplicationsListProps> = ({
         Applications
       </Typography>
       <List>
-        {applications.map((app) => (
-          <ListItem key={app.id}>
-            <ListItemText
-              primary={app.collegeName}
-              secondary={`Deadline: ${new Date(
-                app.deadline
-              ).toLocaleDateString()}`}
-            />
-            <Chip
-              label={app.status}
-              color={
-                app.status === "accepted"
-                  ? "success"
-                  : app.status === "rejected"
-                  ? "error"
-                  : "default"
-              }
-              size="small"
-              sx={{ mr: 1 }}
-            />
-            <Box>
-              <IconButton edge="end" onClick={() => onEdit(app)} sx={{ mr: 1 }}>
-                <EditIcon />
-              </IconButton>
-              <IconButton edge="end" onClick={() => onDelete(app.id)}>
-                <DeleteIcon />
-              </IconButton>
-            </Box>
+        {applications.map((application) => (
+          <ListItem
+            key={application.id}
+            disablePadding
+            secondaryAction={
+              <Box>
+                <IconButton
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onEdit(application)
+                  }}
+                  size="small"
+                >
+                  <EditIcon />
+                </IconButton>
+                <IconButton
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onDelete(application.id)
+                  }}
+                  size="small"
+                  color="error"
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Box>
+            }
+          >
+            <ListItemButton
+              selected={selectedId === application.id}
+              onClick={() => onSelect(application)}
+            >
+              <ListItemText
+                primary={application.collegeName}
+                secondary={`Status: ${application.status}`}
+              />
+            </ListItemButton>
           </ListItem>
         ))}
       </List>

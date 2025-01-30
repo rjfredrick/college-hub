@@ -9,6 +9,7 @@ import Header from "./components/Header"
 import Dashboard from "./pages/Dashboard/index"
 import Login from "./pages/Login/index"
 import SignUp from "./pages/SignUp/index"
+import TimelinePage from "./pages/Timeline/index"
 
 const theme = createTheme({
   palette: {
@@ -35,6 +36,14 @@ const App: React.FC = () => {
               element={
                 <PrivateRoute>
                   <Dashboard />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/timeline"
+              element={
+                <PrivateRoute>
+                  <TimelinePage />
                 </PrivateRoute>
               }
             />

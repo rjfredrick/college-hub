@@ -15,7 +15,7 @@ export const Stats: React.FC<StatsProps> = ({ applications }) => {
     (app) => app.status === "accepted"
   ).length
   const pendingApplications = applications.filter(
-    (app) => app.status === "pending"
+    (app) => app.status === "in-progress"
   ).length
 
   return (

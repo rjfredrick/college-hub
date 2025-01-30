@@ -43,7 +43,7 @@ export const getUserProfile = async (userId: string) => {
 export const createApplication = async (
   userId: string,
   collegeName: string,
-  type: ApplicationType
+  type: ApplicationType = 'regular_decision'
 ): Promise<Application> => {
   // Set default deadline 6 months from now
   const deadline = new Date()
@@ -52,9 +52,10 @@ export const createApplication = async (
   const newApp: Omit<Application, 'id'> = {
     userId,
     collegeName,
-    deadline: deadline.toISOString(), // Store as ISO string
-    status: 'draft',
-    createdAt: new Date()
+    deadline: deadline,
+    status: 'not-started',
+    createdAt: new Date(),
+    updatedAt: new Date()
   }
 
   const docRef = await addDoc(collection(db, 'applications'), newApp)

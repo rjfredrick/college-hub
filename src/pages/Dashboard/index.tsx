@@ -145,6 +145,10 @@ const Dashboard: React.FC = () => {
     }
   }
 
+  const selectedTasks = tasks.filter(
+    (task) => task.applicationId === selectedApplication?.id
+  )
+
   if (loading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
@@ -279,7 +283,11 @@ const Dashboard: React.FC = () => {
                 </Grid>
               </Grid>
               <Grid item xs={12} md={4} sx={{ position: "sticky", top: 24 }}>
-                <TasksList tasks={tasks} onTaskUpdate={fetchTasks} />
+                <TasksList
+                  tasks={selectedTasks}
+                  onTaskUpdate={fetchTasks}
+                  collegeName={selectedApplication?.collegeName}
+                />
               </Grid>
             </Grid>
 

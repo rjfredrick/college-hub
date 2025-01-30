@@ -19,25 +19,22 @@ import {
   deleteDoc,
   doc,
   updateDoc,
+  Timestamp,
 } from "firebase/firestore"
 import { db, auth } from "../config/firebase"
-
-interface Task {
-  id: string
-  title: string
-  completed: boolean
-  userId: string
-  applicationId?: string
-}
+import type { Task } from "../types"
+import { format } from "date-fns"
 
 interface TasksListProps {
   tasks: Task[]
-  onTaskUpdate: () => void
+  onTaskUpdate: () => Promise<void>
+  collegeName?: string
 }
 
 export const TasksList: React.FC<TasksListProps> = ({
   tasks,
   onTaskUpdate,
+  collegeName,
 }) => {
   const [newTask, setNewTask] = useState("")
 
@@ -81,7 +78,7 @@ export const TasksList: React.FC<TasksListProps> = ({
   return (
     <Paper elevation={2} sx={{ p: 2, mb: 2 }}>
       <Typography variant="h6" gutterBottom>
-        Tasks
+        {collegeName ? `Tasks for ${collegeName}` : "Tasks"}
       </Typography>
       <Box sx={{ mb: 2, display: "flex", gap: 1 }}>
         <TextField
@@ -106,7 +103,18 @@ export const TasksList: React.FC<TasksListProps> = ({
             />
             <ListItemText
               primary={task.title}
-              sx={{ textDecoration: task.completed ? "line-through" : "none" }}
+              secondary={`Due: ${format(
+                task.dueDate instanceof Timestamp
+                  ? task.dueDate.toDate()
+                  : task.dueDate,
+                "MMM d, yyyy"
+              )}`}
+              sx={{
+                textDecoration: task.completed ? "line-through" : "none",
+                "& .MuiListItemText-secondary": {
+                  color: task.completed ? "text.disabled" : "text.secondary",
+                },
+              }}
             />
             <ListItemSecondaryAction>
               <IconButton edge="end" onClick={() => handleDeleteTask(task.id)}>

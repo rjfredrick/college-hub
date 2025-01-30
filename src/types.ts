@@ -1,6 +1,7 @@
 export * from './types/index'
 
 export interface Task {
+  applicationId: string
   id: string
   title: string
   description: string

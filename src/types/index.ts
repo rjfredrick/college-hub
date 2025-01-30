@@ -55,7 +55,7 @@ export interface Task {
   status: TaskStatus
   completed: boolean
   userId: string
-  applicationId?: string
+  applicationId: string
   collegeId: string
   collegeName: string
   dependencies: string

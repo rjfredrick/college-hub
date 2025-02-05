@@ -232,7 +232,14 @@ const Dashboard: React.FC = () => {
           minHeight: "100vh",
         }}
       >
-        <Container maxWidth="lg">
+        <Container
+          maxWidth={false} // Remove the default max-width
+          sx={{
+            maxWidth: 1200,
+            mx: "auto",
+            px: 0, // Remove Container's default padding
+          }}
+        >
           <Box sx={{ mt: 4, mb: 4 }}>
             <Box
               sx={{
@@ -243,6 +250,10 @@ const Dashboard: React.FC = () => {
                 pb: 2,
                 borderBottom: 1,
                 borderColor: "divider",
+                px: 2,
+                maxWidth: 1200,
+                width: "100%",
+                mx: "auto",
               }}
             >
               <Typography
@@ -266,7 +277,7 @@ const Dashboard: React.FC = () => {
             </Box>
 
             <Grid container spacing={4}>
-              <Grid item xs={12} md={8}>
+              <Grid item xs={12} md={7}>
                 <Grid container spacing={3}>
                   <Grid item xs={12}>
                     <Stats applications={applications} />
@@ -282,7 +293,7 @@ const Dashboard: React.FC = () => {
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid item xs={12} md={4} sx={{ position: "sticky", top: 24 }}>
+              <Grid item xs={12} md={5}>
                 <TasksList
                   tasks={selectedTasks}
                   onTaskUpdate={fetchTasks}

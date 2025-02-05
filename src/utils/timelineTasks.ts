@@ -4,98 +4,132 @@ export const generateDefaultTasks = (
   applicationId: string,
   collegeName: string,
   userId: string
-): Omit<Task, 'id'>[] => {
+): Omit<Task, 'id' | 'status'>[] => {
   const now = new Date()
   const currentYear = new Date().getFullYear()
-  const defaultTasks: Omit<Task, 'id'>[] = [
+
+  const defaultTasks: Omit<Task, 'id' | 'status'>[] = [
     {
-      title: "Standardized Tests",
-      description: "Submit SAT/ACT scores if required",
-      dueDate: new Date(currentYear, 4, 1), // Spring Junior Year (May 1st)
-      completed: false,
-      userId,
-      applicationId,
-      collegeId: "",
-      collegeName,
-      category: "tests",
-      dependencies: "Take SAT/ACT exams if not test-optional",
-      createdAt: now,
-      updatedAt: now
-    },
-    {
-      title: "College Application",
-      description: "Submit application via Common App, Coalition App, or directly to college",
-      dueDate: new Date(currentYear, 10, 1), // Fall Senior Year (November 1st)
-      completed: false,
-      userId,
-      applicationId,
-      collegeId: "",
-      collegeName,
+      title: "Research and Create College List",
+      description: "Research colleges, evaluate requirements, and create a final list of schools to apply to.",
       category: "application",
+      step: 1,
+      dueDate: new Date(currentYear, 7, 1), // August 1st
+      completed: false,
+      userId,
+      applicationId,
+      collegeId: "",
+      collegeName,
       dependencies: "",
       createdAt: now,
       updatedAt: now
     },
     {
-      title: "Financial Aid & Scholarships",
-      description: "Complete FAFSA and CSS Profile (if required)",
+      title: "Standardized Tests",
+      description: "Take SAT/ACT exams if required. Send scores to colleges before application deadlines.",
+      category: "tests",
+      step: 2,
       dueDate: new Date(currentYear, 9, 1), // October 1st
       completed: false,
       userId,
       applicationId,
       collegeId: "",
       collegeName,
-      category: "financial",
-      dependencies: "Gather financial information and tax documents",
+      dependencies: "Check if college is test-optional",
       createdAt: now,
       updatedAt: now
     },
     {
-      title: "College Decision & Enrollment",
-      description: "Review acceptance and make final decision",
-      dueDate: new Date(currentYear + 1, 4, 1), // May 1st Senior Year
+      title: "College Application",
+      description: "Submit application via Common App/Coalition App/Direct. Include essays, recommendations, and transcripts.",
+      category: "application",
+      step: 3,
+      dueDate: new Date(currentYear, 10, 1), // November 1st
       completed: false,
       userId,
       applicationId,
       collegeId: "",
       collegeName,
+      dependencies: "Complete research, gather documents, request recommendations",
+      createdAt: now,
+      updatedAt: now
+    },
+    {
+      title: "Financial Aid Applications",
+      description: "Complete FAFSA and CSS Profile (if required). Apply for scholarships.",
+      category: "financial",
+      step: 4,
+      dueDate: new Date(currentYear, 9, 15), // October 15th
+      completed: false,
+      userId,
+      applicationId,
+      collegeId: "",
+      collegeName,
+      dependencies: "Gather tax documents and financial information",
+      createdAt: now,
+      updatedAt: now
+    },
+    {
+      title: "Review and Accept Offer",
+      description: "Compare acceptance letters and financial aid packages. Submit deposit by May 1st.",
       category: "decision",
-      dependencies: "",
+      step: 5,
+      dueDate: new Date(currentYear + 1, 4, 1), // May 1st
+      completed: false,
+      userId,
+      applicationId,
+      collegeId: "",
+      collegeName,
+      dependencies: "Receive acceptance and financial aid offers",
+      createdAt: now,
+      updatedAt: now
+    },
+    {
+      title: "Final Academic Requirements",
+      description: "Maintain grades, take AP/IB exams, and send final transcripts.",
+      category: "academic",
+      step: 6,
+      dueDate: new Date(currentYear + 1, 5, 15), // June 15th
+      completed: false,
+      userId,
+      applicationId,
+      collegeId: "",
+      collegeName,
+      dependencies: "Complete all coursework and exams",
       createdAt: now,
       updatedAt: now
     },
     {
       title: "Placement Tests & Orientation",
-      description: "Complete placement tests and attend orientation",
-      dueDate: new Date(currentYear + 1, 5, 1), // June 1st Post-Senior Year
+      description: "Complete required placement tests and attend new student orientation.",
+      category: "academic",
+      step: 7,
+      dueDate: new Date(currentYear + 1, 6, 1), // July 1st
       completed: false,
       userId,
       applicationId,
       collegeId: "",
       collegeName,
-      category: "academic",
-      dependencies: "",
+      dependencies: "Accept admission offer",
       createdAt: now,
       updatedAt: now
     },
     {
       title: "Health & Administrative Tasks",
-      description: "Submit health records, housing forms, and other required documents",
-      dueDate: new Date(currentYear + 1, 6, 1), // July 1st Post-Senior Year
+      description: "Submit health records, housing forms, and complete other required documentation.",
+      category: "administrative",
+      step: 8,
+      dueDate: new Date(currentYear + 1, 6, 15), // July 15th
       completed: false,
       userId,
       applicationId,
       collegeId: "",
       collegeName,
-      category: "administrative",
-      dependencies: "",
+      dependencies: "Accept admission offer",
       createdAt: now,
       updatedAt: now
     }
   ]
 
-  // Sort tasks by due date
-  defaultTasks.sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime())
-
-  return defaultTasks
+  return defaultTasks.sort((a, b) => a.step - b.step)
 } 

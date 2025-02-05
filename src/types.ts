@@ -14,4 +14,5 @@ export interface Task {
   dependencies?: string
   createdAt?: Date
   updatedAt?: Date
+  step: number
 } 

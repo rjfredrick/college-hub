@@ -3,10 +3,14 @@ import {
   Paper,
   Typography,
   Checkbox,
-  TextField,
   Button,
   Box,
   IconButton,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material"
 import {
   Timeline,
@@ -46,6 +50,7 @@ export const TasksList: React.FC<TasksListProps> = ({
 }) => {
   const [newTask, setNewTask] = useState("")
   const [expandedTasks, setExpandedTasks] = useState<Set<string>>(new Set())
+  const [openDialog, setOpenDialog] = useState<string | null>(null)
 
   const handleAddTask = async () => {
     if (!newTask.trim()) return
@@ -100,9 +105,9 @@ export const TasksList: React.FC<TasksListProps> = ({
       sx={{
         p: 2,
         mb: 2,
-        mx: 2, // Add margin on sides
-        maxWidth: 1200, // Maximum width
-        width: "100%", // Full width up to maxWidth
+        width: "100%",
+        boxSizing: "border-box",
+        overflowX: "hidden",
       }}
     >
       <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
@@ -112,11 +117,13 @@ export const TasksList: React.FC<TasksListProps> = ({
         position="right"
         sx={{
           px: 0,
+          width: "100%",
           "& .MuiTimelineContent-root": {
-            flex: 0.8, // Make content area wider
+            flex: "1 1 auto",
+            minWidth: 0, // Allow content to shrink below its minimum content size
           },
           "& .MuiTimelineOppositeContent-root": {
-            flex: 0.2, // Keep date column narrower
+            flex: "0 0 120px",
           },
         }}
       >
@@ -152,7 +159,13 @@ export const TasksList: React.FC<TasksListProps> = ({
                   }}
                 />
               </TimelineSeparator>
-              <TimelineContent sx={{ py: 1, px: 2 }}>
+              <TimelineContent
+                sx={{
+                  py: 1,
+                  px: 2,
+                  maxWidth: "100%", // Limit width to container
+                }}
+              >
                 <Paper
                   elevation={1}
                   sx={{
@@ -161,6 +174,9 @@ export const TasksList: React.FC<TasksListProps> = ({
                     borderRadius: 1,
                     border: 1,
                     borderColor: "divider",
+                    maxWidth: "100%", // Limit width to parent
+                    wordWrap: "break-word", // Allow text to wrap
+                    overflow: "hidden", // Prevent overflow
                   }}
                 >
                   <Box
@@ -186,50 +202,20 @@ export const TasksList: React.FC<TasksListProps> = ({
                       >
                         {task.title}
                       </Typography>
-                      {task.description && (
-                        <>
-                          <Button
-                            size="small"
-                            onClick={() => toggleDescription(task.id)}
-                            endIcon={
-                              isExpanded ? (
-                                <KeyboardArrowUpIcon />
-                              ) : (
-                                <KeyboardArrowDownIcon />
-                              )
-                            }
-                            sx={{
-                              mt: 0.5,
-                              p: 0,
-                              minHeight: 0,
-                              display: "inline-flex",
-                              whiteSpace: "nowrap",
-                              textTransform: "none",
-                              "& .MuiButton-endIcon": {
-                                ml: 0.5,
-                                marginRight: 0,
-                              },
-                            }}
-                          >
-                            {isExpanded ? "Show Less" : "Show More"}
-                          </Button>
-                          {isExpanded && (
-                            <Typography
-                              variant="body2"
-                              color="text.secondary"
-                              sx={{
-                                mt: 1,
-                                fontSize: "0.875rem", // Slightly smaller description text
-                                textDecoration: task.completed
-                                  ? "line-through"
-                                  : "none",
-                              }}
-                            >
-                              {task.description}
-                            </Typography>
-                          )}
-                        </>
-                      )}
+                      <Button
+                        size="small"
+                        onClick={() => setOpenDialog(task.id)}
+                        sx={{
+                          mt: 0.5,
+                          p: 0,
+                          minHeight: 0,
+                          display: "inline-flex",
+                          whiteSpace: "nowrap",
+                          textTransform: "none",
+                        }}
+                      >
+                        Show Details
+                      </Button>
                     </Box>
                     <IconButton
                       size="small"
@@ -244,6 +230,22 @@ export const TasksList: React.FC<TasksListProps> = ({
           )
         })}
       </Timeline>
+      <Dialog
+        open={!!openDialog}
+        onClose={() => setOpenDialog(null)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Task Details</DialogTitle>
+        <DialogContent>
+          <Typography sx={{ whiteSpace: "pre-line", lineHeight: 1.6 }}>
+            {tasks.find((t) => t.id === openDialog)?.description}
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(null)}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </Paper>
   )
 }
